@@ -25,3 +25,10 @@ The trade-off is simplicity over throughput: input bytes are expanded into lists
 - A single in-use symbol must have length 1; a length-0 single-symbol code (which some encoders produce) is not supported, because decoding it would require an out-of-band symbol count that this library does not take.
 - If the bit stream ends mid-code, or contains a bit prefix that no canonical code in the table can match, `decode` raises `DecodeError`. Trailing bits in the final byte beyond those needed for `symbol_count` are silently ignored.
 - `symbol_count` is the number of symbols to decode, not the number of bytes: the decoder stops as soon as that many symbols have been produced.
+
+## Performance
+
+The window keeps a bounded buffer, so `push` is constant time and memory does not
+grow with the length of the stream. `peak` and `trough` are linear in the window
+size, which is the trade that keeps `push` cheap.
+
